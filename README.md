@@ -1,5 +1,25 @@
 # VBA-Outlook
+```
+Function AddOrdinalSuffix(ByVal d As Integer) As String
 
+    Dim suffix As String
+    
+    Select Case d Mod 100
+        Case 11, 12, 13
+            suffix = "th"
+        Case Else
+            Select Case d Mod 10
+                Case 1: suffix = "st"
+                Case 2: suffix = "nd"
+                Case 3: suffix = "rd"
+                Case Else: suffix = "th"
+            End Select
+    End Select
+    
+    AddOrdinalSuffix = d & suffix
+
+End Function
+```
 ```
 Sub CarparkReportTemplate()
 
