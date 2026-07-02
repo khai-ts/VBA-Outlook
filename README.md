@@ -72,3 +72,148 @@ Sub CarparkReportTemplate()
 
 End Sub
 ```
+
+```
+Sub MishelpdeskReplyAll()
+
+    Dim sel As Selection
+    Dim mail As MailItem
+    Dim reply As MailItem
+
+    Dim fso As Object
+    Dim ts As Object
+
+    Dim htmlTemplate As String
+    Dim htmlPath As String
+    Dim originalReply As String
+
+    ' Path to your HTML template
+    htmlPath = "C:\templates\mishelpdesksig.htm"
+
+    Set sel = Application.ActiveExplorer.Selection
+
+    If sel.Count = 0 Then
+        MsgBox "Please select an email first.", vbExclamation
+        Exit Sub
+    End If
+
+    If Not TypeOf sel.Item(1) Is MailItem Then
+        MsgBox "Selected item is not an email.", vbExclamation
+        Exit Sub
+    End If
+
+    Set mail = sel.Item(1)
+
+    ' Create Reply All
+    Set reply = mail.ReplyAll
+
+    ' Display first so Outlook generates the reply HTML
+    reply.Display
+
+    ' Capture the generated reply (contains quoted message + signature)
+    originalReply = reply.htmlBody
+
+    ' Remove the signature by locating the reply separator
+    Dim p As Long
+
+    p = InStr(1, originalReply, "<hr", vbTextCompare)
+
+    If p > 0 Then
+        originalReply = Mid(originalReply, p)
+    Else
+        p = InStr(1, originalReply, "From:", vbTextCompare)
+        If p > 0 Then
+            originalReply = Mid(originalReply, p)
+        End If
+    End If
+
+    ' Read HTML template
+    Set fso = CreateObject("Scripting.FileSystemObject")
+
+    If Not fso.FileExists(htmlPath) Then
+        MsgBox "Template file not found:" & vbCrLf & htmlPath, vbCritical
+        Exit Sub
+    End If
+
+    Set ts = fso.OpenTextFile(htmlPath, 1)
+    htmlTemplate = ts.ReadAll
+    ts.Close
+
+    ' Replace body with template + original message (no Outlook signature)
+    reply.htmlBody = htmlTemplate & "<br><br>" & originalReply
+
+End Sub
+```
+
+```
+Sub UpservicesReplyAll()
+
+    Dim sel As Selection
+    Dim mail As MailItem
+    Dim reply As MailItem
+
+    Dim fso As Object
+    Dim ts As Object
+
+    Dim htmlTemplate As String
+    Dim htmlPath As String
+    Dim originalReply As String
+
+    ' Path to your HTML template
+    htmlPath = "C:\templates\upservicessig.htm"
+
+    Set sel = Application.ActiveExplorer.Selection
+
+    If sel.Count = 0 Then
+        MsgBox "Please select an email first.", vbExclamation
+        Exit Sub
+    End If
+
+    If Not TypeOf sel.Item(1) Is MailItem Then
+        MsgBox "Selected item is not an email.", vbExclamation
+        Exit Sub
+    End If
+
+    Set mail = sel.Item(1)
+
+    ' Create Reply All
+    Set reply = mail.ReplyAll
+
+    ' Display first so Outlook generates the reply HTML
+    reply.Display
+
+    ' Capture the generated reply (contains quoted message + signature)
+    originalReply = reply.htmlBody
+
+    ' Remove the signature by locating the reply separator
+    Dim p As Long
+
+    p = InStr(1, originalReply, "<hr", vbTextCompare)
+
+    If p > 0 Then
+        originalReply = Mid(originalReply, p)
+    Else
+        p = InStr(1, originalReply, "From:", vbTextCompare)
+        If p > 0 Then
+            originalReply = Mid(originalReply, p)
+        End If
+    End If
+
+    ' Read HTML template
+    Set fso = CreateObject("Scripting.FileSystemObject")
+
+    If Not fso.FileExists(htmlPath) Then
+        MsgBox "Template file not found:" & vbCrLf & htmlPath, vbCritical
+        Exit Sub
+    End If
+
+    Set ts = fso.OpenTextFile(htmlPath, 1)
+    htmlTemplate = ts.ReadAll
+    ts.Close
+
+    ' Replace body with template + original message (no Outlook signature)
+    reply.htmlBody = htmlTemplate & "<br><br>" & originalReply
+
+End Sub
+
+```
