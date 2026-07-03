@@ -1,3 +1,7 @@
+# References To Enable (Tools)
+> Microsoft XML v6.0 <br>
+> Microsoft ActiveX Data Objects (2.8 & Multi-dim 6.0)
+
 # VBA-Outlook
 ```
 Function AddOrdinalSuffix(ByVal d As Integer) As String
@@ -216,4 +220,70 @@ Sub UpservicesReplyAll()
 
 End Sub
 
+```
+
+
+```
+Sub DeleteTicket()
+    Dim objItem As MailItem
+    Dim subjectText As String
+    Dim regEx As Object
+    Dim matches As Object
+    Dim ticketNumber As String
+    
+    ' Make sure something is selected
+    If Application.ActiveExplorer.Selection.Count = 0 Then
+        MsgBox "No mail item selected."
+        Exit Sub
+    End If
+    
+    ' Get the first selected mail
+    Set objItem = Application.ActiveExplorer.Selection.Item(1)
+    subjectText = objItem.subject
+    
+    ' Create RegExp object
+    Set regEx = CreateObject("VBScript.RegExp")
+    regEx.Pattern = "[[\(]?\s*Ticket\s*#\s*(\d+)\s*[\])]?"
+    regEx.IgnoreCase = True
+    regEx.Global = False
+    
+    ' Execute regex
+    Set matches = regEx.Execute(subjectText)
+    
+    If matches.Count > 0 Then
+        ' Extract captured group (digits as string, including leading zeros)
+        ticketNumber = CStr(matches(0).SubMatches(0))
+        
+        Dim http As Object
+        Set http = CreateObject("MSXML2.XMLHTTP")
+    
+        Dim url As String
+        url = "http://10.2.14.99/api/tickets/" & ticketNumber
+    
+        http.Open "DELETE", url, False
+        http.setRequestHeader "Content-Type", "application/json"
+        http.setRequestHeader "X-API-Key", "B381D3496769270E2223ED27540C2327" ' <=== SET API KEY HERE !!!!
+        http.Send
+        
+        MsgBox http.responseText
+        
+        If http.Status = 200 Then
+            objItem.subject = regEx.Replace(objItem.subject, "")
+            objItem.subject = Trim(objItem.subject)
+            objItem.Categories = ""
+            objItem.Save
+        Else
+            MsgBox "Error: Failed to delete ticket"
+        End If
+        
+    Else
+        MsgBox "No ticket number found in subject."
+    End If
+    
+    ' Clean up
+    Set regEx = Nothing
+    Set matches = Nothing
+    Set objItem = Nothing
+    
+End Sub
 ```
