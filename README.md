@@ -262,7 +262,7 @@ Sub DeleteTicket()
     
         http.Open "DELETE", url, False
         http.setRequestHeader "Content-Type", "application/json"
-        http.setRequestHeader "X-API-Key", "B381D3496769270E2223ED27540C2327" ' <=== SET API KEY HERE !!!!
+        http.setRequestHeader "X-API-Key", "xxxx" ' <=== SET API KEY HERE !!!!
         http.Send
         
         MsgBox http.responseText
